@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SlidersHorizontal, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
 import type { DetectionParams } from "@/lib/api";
 import { Card } from "./ui/Card";
+import { PresetSelector } from "./PresetSelector";
 
 const DEFAULTS: DetectionParams = {
   min_radius: 8,
@@ -40,10 +41,10 @@ function SliderRow({
 }) {
   const value = params[field] as number;
   return (
-    <div>
-      <div className="flex justify-between mb-1">
-        <label className="text-xs text-gray-400">{label}</label>
-        <span className="text-xs text-brand-400 font-mono">{value}</span>
+    <div className="bg-surface-900/30 rounded-xl p-3 border border-white/5">
+      <div className="flex justify-between mb-2">
+        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{label}</label>
+        <span className="text-xs text-brand-400 font-black font-mono bg-brand-500/10 px-2 py-0.5 rounded">{value}</span>
       </div>
       <input
         type="range"
@@ -51,7 +52,7 @@ function SliderRow({
         max={max}
         value={value}
         onChange={(e) => onChange({ ...params, [field]: Number(e.target.value) })}
-        className="w-full accent-brand-500 h-1.5 rounded-full bg-surface-500 cursor-pointer"
+        className="w-full accent-brand-500 h-2 rounded-full bg-surface-700 cursor-pointer appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-brand-500 [&::-webkit-slider-thumb]:shadow-lg"
       />
     </div>
   );
@@ -61,26 +62,31 @@ export function DetectionSettings({ params, onChange }: DetectionSettingsProps) 
   const [open, setOpen] = useState(false);
 
   return (
-    <div>
+    <div className="space-y-4">
+      {/* Seletor de Presets */}
+      <PresetSelector currentParams={params} onSelectPreset={onChange} />
+
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors mb-3"
+        className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors w-full justify-between p-2 rounded-lg hover:bg-white/5"
       >
-        <SlidersHorizontal size={15} />
-        Parâmetros de Detecção
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal size={15} />
+          Ajuste Manual dos Parâmetros
+        </div>
         {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
       </button>
 
       {open && (
         <Card className="animate-fade-in">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wider">Ajuste Fino do Detector</p>
+            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-black">Fine Tuning</p>
             <button
               onClick={() => onChange(DEFAULTS)}
-              className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-300 transition-colors"
+              className="flex items-center gap-1 text-[10px] text-brand-400 hover:text-brand-300 transition-colors font-bold uppercase tracking-wider"
             >
               <RotateCcw size={12} />
-              Resetar
+              Reset
             </button>
           </div>
 

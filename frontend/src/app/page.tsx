@@ -166,25 +166,8 @@ export default function Home() {
                   <CameraCapture onCapture={handleCapture} isProcessing={isProcessing} />
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="w-full">
                   <DetectionSettings params={params} onChange={setParams} />
-                  <Card className="flex flex-col justify-center">
-                    <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-3 flex items-center gap-2">
-                      <Activity size={12} className="text-brand-400" />
-                      Protocolo Operacional
-                    </p>
-                    <ul className="space-y-2 text-[11px] text-slate-400 leading-relaxed">
-                      <li className="flex items-start gap-2">
-                        <span className="text-brand-400 font-bold">01.</span> Alinhe a câmera frontalmente ao pallet.
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-brand-400 font-bold">02.</span> Garanta que todos os perfis estejam visíveis.
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-brand-400 font-bold">03.</span> Ajuste o raio se a detecção estiver imprecisa.
-                      </li>
-                    </ul>
-                  </Card>
                 </div>
               </div>
 
