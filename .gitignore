@@ -1,0 +1,17 @@
+# Roots
+node_modules/
+venv/
+.next/
+data/
+backend/conferente.db
+frontend/node_modules/
+backend/venv/
+
+# IDEs
+.vscode/
+.idea/
+.windsurf/
+
+# OS
+.DS_Store
+Thumbs.db
