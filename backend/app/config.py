@@ -12,12 +12,16 @@ class Settings(BaseSettings):
     # Banco de dados SQLite local
     DATABASE_URL: str = f"sqlite+aiosqlite:///{BASE_DIR}/conferente.db"
 
-    # CORS - aceita o frontend Next.js
+    # CORS - aceita o frontend Next.js e Vercel
     CORS_ORIGINS: list[str] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:3001",
+        "https://conferente.vercel.app",
+        "https://conferente-git-main-danilocardosoweb.vercel.app",
     ]
+
+    CORS_ALLOW_ALL: bool = True  # Permite qualquer origem (simplifica o deploy)
 
     # Parâmetros padrão do detector de perfis
     DEFAULT_MIN_RADIUS: int = 8

@@ -12,6 +12,9 @@ import {
   Award,
   ZapOff,
   CheckCircle,
+  Wifi,
+  WifiOff,
+  Loader2,
 } from "lucide-react";
 import clsx from "clsx";
 import { CameraCapture } from "@/components/CameraCapture";
@@ -24,6 +27,7 @@ import {
   detectProfiles,
   saveReading,
   getDashboardStats,
+  wakeUpBackend,
   type DetectionResult,
   type DetectionParams,
   type DashboardStats,
@@ -40,18 +44,24 @@ export default function Home() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savedOk, setSavedOk] = useState(false);
+  const [backendStatus, setBackendStatus] = useState<"checking" | "online" | "offline">("checking");
 
   const fetchStats = useCallback(async () => {
     try {
       const data = await getDashboardStats();
       setStats(data);
     } catch {
-      // silencioso – backend pode não estar disponível ainda
+      // silencioso
     }
   }, []);
 
   useEffect(() => {
-    fetchStats();
+    // Acorda o backend (cold start do Render pode levar ~30s)
+    setBackendStatus("checking");
+    wakeUpBackend().then((ok) => {
+      setBackendStatus(ok ? "online" : "offline");
+      if (ok) fetchStats();
+    });
   }, [fetchStats]);
 
   const handleCapture = useCallback(
@@ -127,8 +137,18 @@ export default function Home() {
             <div>
               <h1 className="text-lg font-black tracking-tight text-white uppercase italic">Conferente</h1>
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-pulse" />
-                <p className="text-[10px] text-brand-400 font-bold uppercase tracking-widest">Sistema Ativo</p>
+                {backendStatus === "checking" && (
+                  <><Loader2 size={10} className="text-yellow-400 animate-spin" />
+                  <p className="text-[10px] text-yellow-400 font-bold uppercase tracking-widest">Conectando...</p></>
+                )}
+                {backendStatus === "online" && (
+                  <><span className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-pulse" />
+                  <p className="text-[10px] text-brand-400 font-bold uppercase tracking-widest">Backend Online</p></>
+                )}
+                {backendStatus === "offline" && (
+                  <><WifiOff size={10} className="text-red-400" />
+                  <p className="text-[10px] text-red-400 font-bold uppercase tracking-widest">Backend Offline</p></>
+                )}
               </div>
             </div>
           </div>
@@ -153,6 +173,30 @@ export default function Home() {
           </nav>
         </div>
       </header>
+
+      {/* Banner Cold Start */}
+      {backendStatus === "checking" && (
+        <div className="bg-yellow-500/10 border-b border-yellow-500/20 px-6 py-3">
+          <div className="max-w-7xl mx-auto flex items-center gap-3">
+            <Loader2 size={16} className="text-yellow-400 animate-spin flex-shrink-0" />
+            <p className="text-xs text-yellow-300">
+              <span className="font-black uppercase tracking-wider">Aguardando backend...</span>
+              {" "}O servidor está acordando (pode levar até 30 segundos no primeiro acesso).
+            </p>
+          </div>
+        </div>
+      )}
+      {backendStatus === "offline" && (
+        <div className="bg-red-500/10 border-b border-red-500/20 px-6 py-3">
+          <div className="max-w-7xl mx-auto flex items-center gap-3">
+            <WifiOff size={16} className="text-red-400 flex-shrink-0" />
+            <p className="text-xs text-red-300">
+              <span className="font-black uppercase tracking-wider">Backend indisponível.</span>
+              {" "}Configure a variável <code className="bg-red-900/40 px-1 rounded">NEXT_PUBLIC_API_URL</code> com a URL do servidor.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Main content */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">

@@ -1,11 +1,21 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export const api = axios.create({
   baseURL: `${API_URL}/api/v1`,
-  timeout: 30000,
+  timeout: 60000, // 60s para suportar cold start do Render (~30s)
 });
+
+// Health check – acorda o servidor Render antes de processar
+export async function wakeUpBackend(): Promise<boolean> {
+  try {
+    await axios.get(`${API_URL}/health`, { timeout: 60000 });
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Tipos espelhando os schemas do backend
